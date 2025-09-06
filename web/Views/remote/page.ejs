@@ -1,0 +1,400 @@
+<div class="main">
+  <div class="workspace">
+    <div class="video-container">
+      <video id="video" autoplay playsinline></video>
+      <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <p class="loading-text">Memuat video...</p>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="top-bar">
+        <div class="status-info">
+          <div class="status-item" id="connectionStatusItem">
+            <i class="fas fa-wifi"></i>
+            <span id="connectionStatus">Terhubung</span>
+          </div>
+          <div class="status-item" id="gpsStatusItem">
+            <i class="fas fa-map-marker-alt"></i>
+            <span id="gpsStatus">GPS: 6/10</span>
+          </div>
+          <div class="status-item" id="rcStatusItem">
+            <i class="fas fa-signal"></i>
+            <span id="rcSignal">RC: 85%</span>
+          </div>
+          <div class="status-item" id="pingStatusItem">
+            <i class="fas fa-network-wired"></i>
+            <span id="pingStatus">Ping: 120ms</span>
+          </div>
+          <div class="status-item">
+            <i class="fas fa-drone"></i>
+            <span id="flightMode">Mode: Stabilize</span>
+          </div>
+        </div>
+        <div class="action-buttons">
+          <button class="btn btn-sm btn-outline-light" id="settingsBtn">
+            <i class="fas fa-cog"></i>
+          </button>
+          <button class="btn btn-sm btn-outline-light" id="fullscreenToggleBtn">
+            <i class="fas fa-expand"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="middle-bar">
+        <div class="camera-control" id="cameraControlPanel">
+          <div class="panel-header">
+            <h6>Kontrol Kamera</h6>
+            <button class="minimize-btn" data-target="#cameraControlPanel">
+              <i class="fas fa-minus"></i>
+            </button>
+          </div>
+          <div class="panel-body">
+            <div class="d-flex justify-content-around my-2">
+              <button class="btn btn-sm btn-outline-light" id="photoModeBtn">
+                <i class="fas fa-camera"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-light" id="videoModeBtn">
+                <i class="fas fa-video"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-light" id="zoomInBtn">
+                <i class="fas fa-search-plus"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-light" id="zoomOutBtn">
+                <i class="fas fa-search-minus"></i>
+              </button>
+            </div>
+            <div class="mt-2">
+              <label for="tiltControl" class="form-label">
+                Kemiringan: <span id="tiltValue">0°</span>
+              </label>
+              <input
+                type="range"
+                class="form-range"
+                id="tiltControl"
+                min="-90"
+                max="90"
+                value="0"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="menu-control">
+          <button
+            class="menu-btn"
+            data-bs-toggle="modal"
+            data-bs-target="#controlModal"
+          >
+            <i class="fas fa-gamepad"></i>
+          </button>
+          <button
+            class="menu-btn"
+            data-bs-toggle="modal"
+            data-bs-target="#flightModeModal"
+          >
+            <ion-icon name="airplane"></ion-icon>
+          </button>
+          <button
+            class="menu-btn"
+            data-bs-toggle="modal"
+            data-bs-target="#telemetryModal"
+          >
+            <i class="fas fa-chart-line"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="bottom-bar">
+        <div class="joystick-area">
+          <div class="joystick">
+            <div class="joystick-handle"></div>
+          </div>
+        </div>
+
+        <div class="status-display" id="statusDisplayPanel">
+          <div class="panel-header">
+            <div class="info-group">
+              <div class="status-card-small">
+                <div class="status-label">LAT</div>
+                <div class="status-value small-value" id="latValue">
+                  -6.175392
+                </div>
+              </div>
+              <div class="status-card-small">
+                <div class="status-label">LON</div>
+                <div class="status-value small-value" id="lonValue">
+                  106.827153
+                </div>
+              </div>
+              <div class="status-card-small">
+                <div class="status-label">ALT</div>
+                <div class="status-value small-value" id="altValue">
+                  125 <span style="font-size: 0.8rem">m</span>
+                </div>
+              </div>
+            </div>
+            <button class="minimize-btn" data-target="#statusDisplayPanel">
+              <i class="fas fa-minus"></i>
+            </button>
+          </div>
+          <div class="panel-body">
+            <div class="status-card">
+              <div class="status-label">BATERAI</div>
+              <div class="status-value" id="batteryValue">78%</div>
+              <div class="level-bar">
+                <div
+                  class="level-fill"
+                  id="batteryLevel"
+                  style="width: 78%; background-color: var(--success-color)"
+                ></div>
+              </div>
+            </div>
+            <div class="status-card">
+              <div class="status-label">KETINGGIAN</div>
+              <div class="status-value" id="altitudeValue">
+                125<span style="font-size: 0.8rem"> m</span>
+              </div>
+              <div class="level-bar">
+                <div class="level-fill" id="altitudeLevel"></div>
+              </div>
+            </div>
+            <div class="status-card">
+              <div class="status-label">KECEPATAN</div>
+              <div class="status-value" id="speedValue">
+                35<span style="font-size: 0.8rem"> km/j</span>
+              </div>
+              <div class="level-bar">
+                <div class="level-fill" id="speedLevel"></div>
+              </div>
+            </div>
+            <div class="status-card">
+              <div class="status-label">JARAK</div>
+              <div class="status-value" id="distanceValue">
+                350<span style="font-size: 0.8rem"> m</span>
+              </div>
+              <div class="level-bar">
+                <div class="level-fill" id="distanceLevel"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="joystick-area">
+          <div class="joystick">
+            <div class="joystick-handle"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="rotateOverlay" class="rotate-overlay">
+    <div class="rotate-box">
+      <div class="rotate-icon">🔁</div>
+      <h3>Putar perangkat ke posisi landscape</h3>
+      <p class="desc" style="margin-top: 8px">
+        Tampilan ini dioptimalkan untuk landscape. Silakan putar ponsel Anda
+        untuk pengalaman terbaik.
+      </p>
+      <button class="btn" id="menuBtn">☰ Menu</button>
+      <button class="btn" id="fullscreenBtn">⛶ Fullscreen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Kontrol Utama -->
+<div class="modal fade" id="controlModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Kontrol Utama</h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="control-grid">
+          <button class="control-btn primary" onclick="takeOff()">
+            <i class="fas fa-rocket"></i> Take Off
+          </button>
+          <button class="control-btn" onclick="land()">
+            <i class="fas fa-plane-arrival"></i> Land
+          </button>
+          <button class="control-btn" onclick="returnHome()">
+            <i class="fas fa-home"></i> RTH
+          </button>
+          <button class="control-btn emergency" onclick="emergencyStop()">
+            <i class="fas fa-exclamation-triangle"></i> Emergency Stop
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Mode Penerbangan -->
+<div class="modal fade" id="flightModeModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Mode Penerbangan</h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="flight-modes">
+          <button class="mode-btn" onclick="setFlightMode(this, 'manual')">
+            Manual
+          </button>
+          <button class="mode-btn" onclick="setFlightMode(this, 'altitude')">
+            Altitude Hold
+          </button>
+          <button class="mode-btn active" onclick="setFlightMode(this, 'gps')">
+            GPS Hold
+          </button>
+          <button class="mode-btn" onclick="setFlightMode(this, 'waypoint')">
+            Waypoint
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Telemetri -->
+<div class="modal fade" id="telemetryModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Data Telemetri</h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-6 mb-2"><strong>Latitude:</strong> -6.175392</div>
+          <div class="col-6 mb-2"><strong>Longitude:</strong> 106.827153</div>
+          <div class="col-6 mb-2"><strong>Altitude:</strong> 125 m</div>
+          <div class="col-6 mb-2"><strong>Kecepatan:</strong> 35 km/j</div>
+          <div class="col-6 mb-2"><strong>Jarak:</strong> 350 m</div>
+          <div class="col-6 mb-2"><strong>Sisa Baterai:</strong> 78%</div>
+          <div class="col-6 mb-2"><strong>Sinyal RC:</strong> 85%</div>
+          <div class="col-6 mb-2"><strong>Ping Server:</strong> 120 ms</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tambahkan modal ini di bagian modal lainnya di page.ejs -->
+<div
+  class="modal fade"
+  id="settingsModal"
+  tabindex="-1"
+  aria-labelledby="settingsModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="settingsModalLabel">
+          Pengaturan Koordinat
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form id="settingsForm">
+          <div class="mb-3">
+            <h6>Waypoint</h6>
+            <div class="row">
+              <div class="col">
+                <label for="waypointLat" class="form-label">Latitude</label>
+                <input
+                  type="number"
+                  step="any"
+                  class="form-control"
+                  id="waypointLat"
+                  placeholder="Contoh: -6.175392"
+                />
+              </div>
+              <div class="col">
+                <label for="waypointLon" class="form-label">Longitude</label>
+                <input
+                  type="number"
+                  step="any"
+                  class="form-control"
+                  id="waypointLon"
+                  placeholder="Contoh: 106.827153"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <h6>Return to Home (RTH)</h6>
+            <div class="row">
+              <div class="col">
+                <label for="rthLat" class="form-label">Latitude</label>
+                <input
+                  type="number"
+                  step="any"
+                  class="form-control"
+                  id="rthLat"
+                  placeholder="Contoh: -6.175392"
+                />
+              </div>
+              <div class="col">
+                <label for="rthLon" class="form-label">Longitude</label>
+                <input
+                  type="number"
+                  step="any"
+                  class="form-control"
+                  id="rthLon"
+                  placeholder="Contoh: 106.827153"
+                />
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">Simpan</button>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

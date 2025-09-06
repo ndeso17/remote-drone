@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title><%= title %></title>
+    <meta name="description" content="<%= description %>" />
+    <meta name="keywords" content="<%= keywords %>" />
+    <!-- <link rel="icon" href="/public/img/logo.ico" type="image/x-icon" /> -->
+    <!-- Styles -->
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <!-- CSS Per Page -->
+    <% if (typeof css !== "undefined" && css) { %>
+    <link rel="stylesheet" href="/css/<%= css %>" />
+    <% } %>
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- Bootstrap CSS -->
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"> -->
+    <!-- Font Awesome untuk ikon -->
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> -->
+    <!-- Ion Icons -->
+    <!-- <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script> -->
+    <!-- <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script> -->
+
+    <!-- PWA -->
+    <link rel="manifest" href="/pwa/manifest.json" />
+    <meta name="theme-color" content="#000000" />
+  </head>
+
+  <body class="dark-theme">
+    <!-- Start Content -->
+    <%- content %>
+    <!-- End Content -->
+    <!-- =========== Scripts =========  -->
+    <script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- ====== ionicons ======= -->
+    <script
+      type="module"
+      src="/ionicons/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script nomodule src="/ionicons/ionicons/ionicons.js"></script>
+    <!-- Bootstrap & jQuery JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> -->
+
+    <!-- Bootstrap JS -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script> -->
+
+    <% if (typeof js !== "undefined" && js) { %>
+    <script src="/js/<%= js %>"></script>
+    <% } %>
+
+    <script src="/pwa/load.js"></script>
+  </body>
+</html>

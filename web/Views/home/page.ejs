@@ -1,0 +1,98 @@
+<div class="main">
+  <div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center w-100 mb-4">
+      <h1 class="h3 fw-bold">Drone App</h1>
+      <!-- Switch Tema -->
+      <button id="theme-toggle" class="btn btn-theme-toggle">
+        <ion-icon name="contrast-outline" style="font-size: 1.5rem"></ion-icon>
+      </button>
+    </div>
+
+    <!-- Content -->
+    <div class="w-100 d-flex flex-column align-items-center">
+      <!-- Streaming Kamera -->
+      <div class="video-stream">
+        <video id="video" autoplay playsinline loop muted></video>
+      </div>
+
+      <!-- Mini Control Kamera -->
+      <div class="mini-control">
+        <h2 class="h5 fw-bold mb-3">Kontrol Kamera</h2>
+        <div class="d-flex justify-content-around align-items-center">
+          <button id="photoBtn" class="btn btn-secondary rounded-pill fw-bold">
+            <i class="fas fa-camera"></i> Foto
+          </button>
+          <button id="videoBtn" class="btn btn-secondary rounded-pill fw-bold">
+            <i class="fas fa-video"></i> Rekam
+          </button>
+          <button id="zoomInBtn" class="btn btn-secondary rounded-pill fw-bold">
+            <i class="fas fa-search-plus"></i> Zoom In
+          </button>
+          <button
+            id="zoomOutBtn"
+            class="btn btn-secondary rounded-pill fw-bold"
+          >
+            <i class="fas fa-search-minus"></i> Zoom Out
+          </button>
+        </div>
+      </div>
+
+      <!-- Telemetry Live Data -->
+      <div class="telemetry-data">
+        <h2 class="h5 fw-bold mb-3">Data Telemetri</h2>
+        <div class="row row-cols-2">
+          <div class="col">
+            <div id="battery-data">
+              <div class="text-sm text-muted">Baterai</div>
+              <div class="h5 fw-bold">85%</div>
+            </div>
+          </div>
+          <div class="col">
+            <div id="altitude-data">
+              <div class="text-sm text-muted">Ketinggian</div>
+              <div class="h5 fw-bold">50 m</div>
+            </div>
+          </div>
+          <div class="col">
+            <div id="speed-data">
+              <div class="text-sm text-muted">Kecepatan</div>
+              <div class="h5 fw-bold">15 km/j</div>
+            </div>
+          </div>
+          <div class="col">
+            <div id="distance-data">
+              <div class="text-sm text-muted">Jarak</div>
+              <div class="h5 fw-bold">120 m</div>
+            </div>
+          </div>
+          <div class="col">
+            <div id="latitude-data">
+              <div class="text-sm text-muted">Latitude</div>
+              <div class="h5 fw-bold">0.000000</div>
+            </div>
+          </div>
+          <div class="col">
+            <div id="longitude-data">
+              <div class="text-sm text-muted">Longitude</div>
+              <div class="h5 fw-bold">0.000000</div>
+            </div>
+          </div>
+          <div class="col">
+            <div id="gps-altitude-data">
+              <div class="text-sm text-muted">Ketinggian GPS</div>
+              <div class="h5 fw-bold">0.00 m</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Switch Ke /remote -->
+      <div class="mt-auto">
+        <a href="/remote" class="btn btn-link-remote">
+          Beralih ke Kontrol Penuh <i class="fas fa-arrow-right ms-2"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

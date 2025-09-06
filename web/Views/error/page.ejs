@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Error | <%= title %></title>
+    <link rel="icon" href="/public/img/logo/logo.ico" type="image/x-icon" />
+
+    <!-- CSS Styling -->
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/public/css/error.css" />
+
+    <!-- Ionicons -->
+    <script type="module" src="/ionicons/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="/ionicons/ionicons/ionicons.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="error-container">
+        <!-- Judul Error -->
+        <h1 class="display-1">Oops!</h1>
+        <h2 class="display-5"><%= errorCode %> - <%= description %></h2>
+
+        <!-- Detail pesan error -->
+        <div class="error-details mb-4"><%= message %></div>
+
+        <!-- Aksi tombol -->
+        <div
+          class="error-actions d-flex flex-wrap gap-3 justify-content-center"
+        >
+          <a
+            href="#"
+            onclick="history.back()"
+            class="btn btn-outline-primary"
+            style="width: 240px"
+          >
+            <ion-icon name="arrow-undo-outline"></ion-icon>
+            Kembali
+          </a>
+
+          <a href="/" class="btn btn-primary" style="width: 240px">
+            <ion-icon name="home-outline"></ion-icon>
+            Beranda
+          </a>
+
+          <a
+            href="https://wa.me/628884188844?text=Assalamu%27alaikum.%20Saya%20mengalami%20error%20%3A%20<%= encodeURIComponent(errorCode) %>,%20<%= encodeURIComponent(message) %>."
+            target="_blank"
+            class="btn btn-outline-secondary"
+            style="width: 240px"
+          >
+            <ion-icon name="logo-whatsapp"></ion-icon>
+            Humas Peduli Bangsa
+          </a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
