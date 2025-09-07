@@ -1,36 +1,55 @@
 $(document).ready(function () {
-  // Simulasi loading video
+  // === VIDEO STREAM FIX + HLS SUPPORT ===
+  const videoElement = document.getElementById("video");
+
   setTimeout(function () {
     $("#loadingOverlay").addClass("hidden");
-    // Di implementasi nyata, ini akan menjadi stream video dari drone
-    $("#video").html(
-      '<source src="https://assets.codepen.io/2362/city-drone.mp4" type="video/mp4">'
-    );
+
+    // URL HLS (ganti sesuai stream drone)
+    const hlsUrl =
+      "https://stream-akamai.castr.com/5b9352dbda7b8c769937e459/live_2361c920455111ea85db6911fe397b9e/index.fmp4.m3u8";
+
+    if (Hls.isSupported()) {
+      const hls = new Hls();
+      hls.loadSource(hlsUrl);
+      hls.attachMedia(videoElement);
+      hls.on(Hls.Events.MANIFEST_PARSED, function () {
+        videoElement.play().catch((err) => {
+          console.warn("Autoplay blocked, user must interact:", err);
+        });
+      });
+    } else if (videoElement.canPlayType("application/vnd.apple.mpegurl")) {
+      videoElement.src = hlsUrl;
+      videoElement.addEventListener("loadedmetadata", function () {
+        videoElement.play().catch((err) => {
+          console.warn("Autoplay blocked, user must interact:", err);
+        });
+      });
+    } else {
+      videoElement.innerHTML =
+        '<source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">';
+      videoElement.load();
+      videoElement.play().catch((err) => {
+        console.warn("Autoplay blocked, user must interact:", err);
+      });
+    }
   }, 2000);
 
-  // --- Fungsi Full Screen yang Kompatibel ---
+  // === FULLSCREEN TOGGLE ===
   $("#fullscreenToggleBtn, #fullscreenBtn").click(function () {
     const elem = document.documentElement;
     if (!document.fullscreenElement) {
-      if (elem.requestFullscreen) {
-        elem.requestFullscreen();
-      } else if (elem.webkitRequestFullscreen) {
-        elem.webkitRequestFullscreen();
-      } else if (elem.msRequestFullscreen) {
-        elem.msRequestFullscreen();
-      }
+      if (elem.requestFullscreen) elem.requestFullscreen();
+      else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+      else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
     } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-      } else if (document.msExitFullscreen) {
-        document.msExitFullscreen();
-      }
+      if (document.exitFullscreen) document.exitFullscreen();
+      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      else if (document.msExitFullscreen) document.msExitFullscreen();
     }
   });
 
-  // Handler untuk perangkat mobile, sembunyikan overlay rotate saat dalam landscape
+  // === ORIENTATION CHECK ===
   function checkOrientation() {
     if (window.innerHeight > window.innerWidth) {
       $("#rotateOverlay").removeClass("hidden");
@@ -38,106 +57,76 @@ $(document).ready(function () {
       $("#rotateOverlay").addClass("hidden");
     }
   }
-
   $(window).on("resize load", checkOrientation);
 
-  // --- Fungsi untuk Mengubah Warna Status Bar ---
+  // === STATUS BAR FUNCTION ===
   function updateStatusBar(rc, ping, gps) {
-    // RC
-    let rcColorClass = "";
-    if (rc >= 80) {
-      rcColorClass = "green";
-    } else if (rc >= 50) {
-      rcColorClass = "yellow";
-    } else if (rc >= 10) {
-      rcColorClass = "red";
-    } else {
-      $("#rcSignal").text("RC: DIED");
-      rcColorClass = "red";
-    }
-    if (rc >= 10) {
-      $("#rcSignal").text("RC: " + rc + "%");
-    }
+    let rcColorClass = rc >= 80 ? "green" : rc >= 50 ? "yellow" : "red";
+    $("#rcSignal").text(rc >= 10 ? `RC: ${rc}%` : "RC: DIED");
     $("#rcStatusItem").removeClass("green yellow red").addClass(rcColorClass);
 
-    // Ping
-    let pingColorClass = "";
-    if (ping <= 60) {
-      pingColorClass = "green";
-    } else if (ping <= 130) {
-      pingColorClass = "yellow";
-    } else {
-      pingColorClass = "red";
-    }
+    let pingColorClass = ping <= 60 ? "green" : ping <= 130 ? "yellow" : "red";
     $("#pingStatus").text("Ping: " + ping + "ms");
     $("#pingStatusItem")
       .removeClass("green yellow red")
       .addClass(pingColorClass);
 
-    // GPS
-    let gpsColorClass = "";
-    if (gps >= 8) {
-      gpsColorClass = "green";
-    } else if (gps >= 4) {
-      gpsColorClass = "yellow";
-    } else {
-      gpsColorClass = "red";
-    }
+    let gpsColorClass = gps >= 8 ? "green" : gps >= 4 ? "yellow" : "red";
     $("#gpsStatus").text("GPS: " + gps + "/10");
     $("#gpsStatusItem").removeClass("green yellow red").addClass(gpsColorClass);
   }
 
-  // --- Fungsi untuk Mengubah Bar Level ---
+  // === BAR LEVEL FUNCTION ===
   function updateLevelBar(value, maxValue, elementId) {
     const fillElement = $(`#${elementId}`);
     const percentage = (value / maxValue) * 100;
     fillElement.css("width", percentage + "%");
 
     let color = "var(--success-color)";
-    if (percentage < 50 && percentage >= 20) {
-      color = "var(--warning-color)";
-    } else if (percentage < 20) {
-      color = "var(--danger-color)";
-    }
+    if (percentage < 50 && percentage >= 20) color = "var(--warning-color)";
+    else if (percentage < 20) color = "var(--danger-color)";
     fillElement.css("background-color", color);
   }
 
-  // Simulasi perubahan status secara berkala
-  setInterval(function () {
-    // Data dummy
-    const battery = Math.max(10, Math.floor(Math.random() * 100) - 2);
-    const altitude = Math.floor(Math.random() * 200);
-    const speed = Math.floor(Math.random() * 50);
-    const distance = Math.floor(Math.random() * 500);
-    const rcSignal = Math.floor(Math.random() * 100);
-    const ping = Math.floor(Math.random() * 150) + 10;
-    const gps = Math.floor(Math.random() * 10) + 1;
-    const lat = -6.175392 + (Math.random() * 0.005 - 0.0025);
-    const lon = 106.827153 + (Math.random() * 0.005 - 0.0025);
+  // === MQTT SUBSCRIBE UNTUK TELEMETRI ===
+  const client = mqtt.connect("ws://192.168.18.9:9001"); // WebSocket broker
 
-    // Update status bar
-    updateStatusBar(rcSignal, ping, gps);
+  client.on("connect", () => {
+    console.log("✅ Connected to MQTT Broker");
+    client.subscribe("drone/telemetry");
+  });
 
-    // Update status display dengan bar level
-    $("#batteryValue").text(battery + "%");
-    updateLevelBar(battery, 100, "batteryLevel");
+  client.on("message", (topic, message) => {
+    try {
+      const data = JSON.parse(message.toString());
+      console.log("📥 Telemetry:", data);
 
-    $("#altitudeValue").text(altitude + "m");
-    updateLevelBar(altitude, 200, "altitudeLevel");
+      // Update status bar
+      updateStatusBar(data.rcSignal, data.ping, 7); // GPS dummy
 
-    $("#speedValue").text(speed + "km/j");
-    updateLevelBar(speed, 50, "speedLevel");
+      // Update bar level
+      $("#batteryValue").text(data.battery + "%");
+      updateLevelBar(data.battery, 100, "batteryLevel");
 
-    $("#distanceValue").text(distance + "m");
-    updateLevelBar(distance, 500, "distanceLevel");
+      $("#altitudeValue").text(data.altitude + "m");
+      updateLevelBar(data.altitude, 200, "altitudeLevel");
 
-    // Update koordinat di header panel
-    $("#latValue").text(lat.toFixed(6));
-    $("#lonValue").text(lon.toFixed(6));
-    $("#altValue").text(altitude + "m");
-  }, 3000);
+      $("#speedValue").text(data.speed + "km/j");
+      updateLevelBar(data.speed, 50, "speedLevel");
 
-  // --- Kontrol Kamera ---
+      $("#distanceValue").text(data.distance + "m");
+      updateLevelBar(data.distance, 500, "distanceLevel");
+
+      // Update koordinat
+      $("#latValue").text(data.latitude.toFixed(6));
+      $("#lonValue").text(data.longitude.toFixed(6));
+      $("#altValue").text(data.altitude + "m");
+    } catch (err) {
+      console.error("❌ Failed to parse telemetry:", err);
+    }
+  });
+
+  // === KONTROL KAMERA ===
   let currentZoom = 1;
 
   $("#tiltControl").on("input", function () {
@@ -165,19 +154,15 @@ $(document).ready(function () {
     console.log("Zoom Out: " + currentZoom.toFixed(1));
   });
 
-  // --- Fungsi Minimize / Maximize Panel ---
+  // === PANEL MINIMIZE / MAXIMIZE ===
   $(".minimize-btn").on("click", function () {
     const targetId = $(this).data("target");
     const panel = $(targetId);
     const panelBody = panel.find(".panel-body");
 
-    // Toggle kelas hidden pada panel body
     panelBody.toggleClass("hidden");
-
-    // Toggle kelas minimized pada panel utama
     panel.toggleClass("minimized");
 
-    // Ubah ikon tombol
     const icon = $(this).find("i");
     if (panel.hasClass("minimized")) {
       icon.removeClass("fa-minus").addClass("fa-plus");
@@ -186,11 +171,10 @@ $(document).ready(function () {
     }
   });
 
-  // Variabel global untuk menyimpan koordinat
+  // === FLIGHT CONTROL ===
   let waypointCoords = { latitude: null, longitude: null };
   let rthCoords = { latitude: null, longitude: null };
 
-  // Fungsi kontrol drone
   window.takeOff = function () {
     alert("Perintah Take Off dikirim!");
   };
@@ -205,7 +189,7 @@ $(document).ready(function () {
         `Perintah Return to Home dikirim ke koordinat: Lat ${rthCoords.latitude}, Lon ${rthCoords.longitude}!`
       );
     } else {
-      alert("Koordinat RTH belum diatur! Silakan atur di menu pengaturan.");
+      alert("Koordinat RTH belum diatur!");
     }
   };
 
@@ -223,9 +207,7 @@ $(document).ready(function () {
       mode === "waypoint" &&
       (!waypointCoords.latitude || !waypointCoords.longitude)
     ) {
-      alert(
-        "Mode Waypoint diaktifkan, tetapi koordinat waypoint belum diatur! Silakan atur di menu pengaturan."
-      );
+      alert("Mode Waypoint diaktifkan, koordinat belum diatur!");
     } else {
       alert("Mode penerbangan diubah ke: " + getModeName(mode));
     }
@@ -241,12 +223,11 @@ $(document).ready(function () {
     return modes[mode] || mode;
   }
 
-  // Handler untuk settingsBtn
+  // === SETTINGS MODAL ===
   $("#settingsBtn").click(function () {
     $("#settingsModal").modal("show");
   });
 
-  // Handler untuk submit pengaturan koordinat
   $("#settingsForm").on("submit", function (e) {
     e.preventDefault();
     const waypointLat = $("#waypointLat").val();
@@ -254,37 +235,26 @@ $(document).ready(function () {
     const rthLat = $("#rthLat").val();
     const rthLon = $("#rthLon").val();
 
-    if (
-      waypointLat &&
-      waypointLon &&
-      !isNaN(waypointLat) &&
-      !isNaN(waypointLon)
-    ) {
+    if (waypointLat && waypointLon) {
       waypointCoords.latitude = parseFloat(waypointLat);
       waypointCoords.longitude = parseFloat(waypointLon);
       alert(
         `Koordinat Waypoint diatur: Lat ${waypointCoords.latitude}, Lon ${waypointCoords.longitude}`
       );
-    } else if (waypointLat || waypointLon) {
-      alert("Masukkan koordinat Waypoint yang valid (Latitude dan Longitude)!");
-      return;
     }
 
-    if (rthLat && rthLon && !isNaN(rthLat) && !isNaN(rthLon)) {
+    if (rthLat && rthLon) {
       rthCoords.latitude = parseFloat(rthLat);
       rthCoords.longitude = parseFloat(rthLon);
       alert(
         `Koordinat RTH diatur: Lat ${rthCoords.latitude}, Lon ${rthCoords.longitude}`
       );
-    } else if (rthLat || rthLon) {
-      alert("Masukkan koordinat RTH yang valid (Latitude dan Longitude)!");
-      return;
     }
 
     $("#settingsModal").modal("hide");
   });
 
-  // === Kontrol Joystick (multi-touch + bounce effect) ===
+  // === JOYSTICK CONTROL ===
   const joystickValues = {
     left: { x: 0, y: 0 },
     right: { x: 0, y: 0 },
@@ -339,7 +309,6 @@ $(document).ready(function () {
       }, 300);
     }
 
-    // Mouse events
     $joystick.on("mousedown", function (e) {
       active = true;
       e.preventDefault();
@@ -361,7 +330,6 @@ $(document).ready(function () {
       }
     });
 
-    // Touch events
     $joystick.on("touchstart", function (e) {
       e.preventDefault();
       if (!active) {
@@ -408,7 +376,7 @@ $(document).ready(function () {
     resetHandle();
   });
 
-  // Cegah pinch zoom (khusus iOS Safari & Android)
+  // === PREVENT PINCH ZOOM ===
   document.addEventListener("gesturestart", (e) => e.preventDefault());
   document.addEventListener("gesturechange", (e) => e.preventDefault());
   document.addEventListener("gestureend", (e) => e.preventDefault());

@@ -14,70 +14,100 @@ const videoBtn = document.getElementById("videoBtn");
 const zoomInBtn = document.getElementById("zoomInBtn");
 const zoomOutBtn = document.getElementById("zoomOutBtn");
 
-// Simulasi Video Stream
+const droneId = "drone-1";
+
+// === Fungsi update UI telemetry ===
+function renderTelemetry(data) {
+  if (data.battery)
+    telemetryData.battery.querySelector("div:last-child").textContent =
+      data.battery + "%";
+
+  if (data.altitude)
+    telemetryData.altitude.querySelector("div:last-child").textContent =
+      data.altitude + " m";
+
+  if (data.speed)
+    telemetryData.speed.querySelector("div:last-child").textContent =
+      data.speed + " km/j";
+
+  if (data.distance)
+    telemetryData.distance.querySelector("div:last-child").textContent =
+      data.distance + " m";
+
+  if (data.latitude)
+    telemetryData.latitude.querySelector("div:last-child").textContent = Number(
+      data.latitude
+    ).toFixed(6);
+
+  if (data.longitude)
+    telemetryData.longitude.querySelector("div:last-child").textContent =
+      Number(data.longitude).toFixed(6);
+
+  if (data.gpsAltitude)
+    telemetryData.gpsAltitude.querySelector("div:last-child").textContent =
+      data.gpsAltitude + " m";
+}
+
+// === MQTT Client ===
+function initMQTT() {
+  const host = "ws://192.168.18.9:9001"; // alamat WebSocket broker
+  const client = mqtt.connect(host);
+
+  client.on("connect", () => {
+    console.log("✅ MQTT Connected");
+    client.subscribe(`drone/${droneId}/telemetry`);
+  });
+
+  client.on("message", (topic, message) => {
+    try {
+      const data = JSON.parse(message.toString());
+      console.log("📥 MQTT Data:", data);
+      renderTelemetry(data);
+    } catch (err) {
+      console.error("Gagal parse MQTT:", err);
+    }
+  });
+
+  client.on("error", (err) => {
+    console.error("MQTT Error:", err);
+  });
+}
+
+// === Video Stream dengan HLS ===
 function startVideoStream() {
-  // Menggunakan URL video placeholder
-  video.src = "https://assets.codepen.io/2362/city-drone.mp4";
-  video.play();
+  const hlsUrl = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"; // ganti dengan stream drone
+
+  if (Hls.isSupported()) {
+    const hls = new Hls();
+    hls.loadSource(hlsUrl);
+    hls.attachMedia(video);
+    hls.on(Hls.Events.MANIFEST_PARSED, function () {
+      video
+        .play()
+        .catch((err) =>
+          console.warn("Autoplay diblokir, butuh interaksi user:", err)
+        );
+    });
+  } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+    video.src = hlsUrl;
+    video.addEventListener("loadedmetadata", function () {
+      video
+        .play()
+        .catch((err) =>
+          console.warn("Autoplay diblokir, butuh interaksi user:", err)
+        );
+    });
+  } else {
+    // fallback ke mp4 lokal
+    video.src = "https://www.w3schools.com/html/mov_bbb.mp4";
+    video.play();
+  }
 }
 
-// Fungsi untuk mengupdate data telemetri secara berkala
-function updateTelemetry() {
-  const battery = Math.floor(Math.random() * 100) + 1;
-  const altitude = Math.floor(Math.random() * 200) + 10;
-  const speed = Math.floor(Math.random() * 50) + 5;
-  const distance = Math.floor(Math.random() * 500) + 20;
-  const latitude = -6.175392 + (Math.random() * 0.005 - 0.0025);
-  const longitude = 106.827153 + (Math.random() * 0.005 - 0.0025);
-  const gpsAltitude = Math.floor(Math.random() * 150) + 5;
-
-  telemetryData.battery.querySelector(
-    "div:last-child"
-  ).textContent = `${battery}%`;
-  telemetryData.altitude.querySelector(
-    "div:last-child"
-  ).textContent = `${altitude} m`;
-  telemetryData.speed.querySelector(
-    "div:last-child"
-  ).textContent = `${speed} km/j`;
-  telemetryData.distance.querySelector(
-    "div:last-child"
-  ).textContent = `${distance} m`;
-  telemetryData.latitude.querySelector(
-    "div:last-child"
-  ).textContent = `${latitude.toFixed(6)}`;
-  telemetryData.longitude.querySelector(
-    "div:last-child"
-  ).textContent = `${longitude.toFixed(6)}`;
-  telemetryData.gpsAltitude.querySelector(
-    "div:last-child"
-  ).textContent = `${gpsAltitude} m`;
-
-  // Atur warna latar belakang berdasarkan nilai
-  telemetryData.battery.style.backgroundColor = getStatusColor(battery, 50, 20);
-  telemetryData.altitude.style.backgroundColor = getStatusColor(
-    altitude,
-    100,
-    50
-  );
-  telemetryData.speed.style.backgroundColor = getStatusColor(speed, 30, 15);
-  telemetryData.distance.style.backgroundColor = getStatusColor(
-    distance,
-    400,
-    100
-  );
-}
-
-function getStatusColor(value, high, low) {
-  if (value > high) return "var(--success-color)";
-  if (value > low) return "var(--warning-color)";
-  return "var(--danger-color)";
-}
-
-// Event Listeners
+// === Event Listeners ===
 document.addEventListener("DOMContentLoaded", () => {
   startVideoStream();
-  setInterval(updateTelemetry, 3000);
+  initMQTT(); // realtime telemetry
 });
 
 themeToggle.addEventListener("click", () => {
